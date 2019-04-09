@@ -10,15 +10,17 @@ var app = app || {};
 	// The DOM element for a todo item...
 	app.TodoView = Backbone.View.extend({
 		//... is a list tag.
+		
 		tagName:  'li',
 
 		// Cache the template function for a single item.
 		template: _.template($('#item-template').html()),
-
+		
 		// The DOM events specific to an item.
 		events: {
 			'click .toggle': 'toggleCompleted',
-			'click .edit-btn': 'edit',
+			'click .priority-btn': 'prioritize',
+			'dblclick label': 'edit',
 			'click .destroy': 'clear',
 			'keypress .edit': 'updateOnEnter',
 			'keydown .edit': 'revertOnEscape',
@@ -30,6 +32,8 @@ var app = app || {};
 		// **TodoView** in this app, we set a direct reference on the model for
 		// convenience.
 		initialize: function () {
+			console.log('dad');
+			console.log(this.$el.toggleClass());
 			this.listenTo(this.model, 'change', this.render);
 			this.listenTo(this.model, 'destroy', this.remove);
 			this.listenTo(this.model, 'visible', this.toggleVisible);
@@ -47,10 +51,18 @@ var app = app || {};
 			if (this.model.changed.id !== undefined) {
 				return;
 			}
-
+			console.log('antes');
+			console.log(this.$el);
+			console.log(this.template(this.model.toJSON()));
 			this.$el.html(this.template(this.model.toJSON()));
+			console.log(this.model.toJSON());
+			console.log(this.$el);
 			this.$el.toggleClass('completed', this.model.get('completed'));
+			console.log('Toogle class com completed');
+			console.log(this.$el.toggleClass());
+			
 			this.toggleVisible();
+			console.log(this.toggleVisible);
 			this.$input = this.$('.edit');
 			return this;
 		},
@@ -60,6 +72,7 @@ var app = app || {};
 		},
 
 		isHidden: function () {
+			console.log(app.TodoFilter);
 			return this.model.get('completed') ?
 				app.TodoFilter === 'active' :
 				app.TodoFilter === 'completed';
@@ -67,12 +80,12 @@ var app = app || {};
 
 		// Toggle the `"completed"` state of the model.
 		toggleCompleted: function () {
+			console.log(this.model);
 			this.model.toggle();
 		},
 
 		// Switch this view into `"editing"` mode, displaying the input field.
 		edit: function () {
-			console.log(this.$input.focus());
 			this.$el.addClass('editing');
 			this.$input.focus();
 		},
@@ -128,6 +141,9 @@ var app = app || {};
 		// Remove the item, destroy the model from *localStorage* and delete its view.
 		clear: function () {
 			this.model.destroy();
+		},
+		prioritize: function(){
+			this.$el.toggleClass('priority');
 		}
 	});
 })(jQuery);
